@@ -94,7 +94,10 @@ extern "C" {
 
         interception.set_function("sendMouseAction", Aula::Interception::sendMouseAction);
         interception.set_function("sendMouseWheel", Aula::Interception::sendMouseWheel);
-        interception.set_function("sendKeyAction", Aula::Interception::sendKeyAction);
+        interception.set_function("sendKeyAction", sol::overload(
+            [](u8 vk, Aula::Interception::KeyAction mode) { return Aula::Interception::sendKeyAction(vk, mode); },
+            [](u8 vk) { return Aula::Interception::sendKeyAction(vk); }
+        ));
         interception.set_function("sendKeyString", Aula::Interception::sendKeyString);
 
         return 0;
