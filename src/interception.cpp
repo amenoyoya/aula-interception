@@ -23,18 +23,26 @@ extern "C" {
         
         interception.set_function("setCurrentProcessPriority", Aula::Interception::setCurrentProcessPriority);
 
-        interception.new_usertype<InterceptionMouseStroke>("MouseStroke",
-            "state", &InterceptionMouseStroke::state,
-            "flags", &InterceptionMouseStroke::flags,
-            "rolling", &InterceptionMouseStroke::rolling,
-            "x", &InterceptionMouseStroke::x,
-            "y", &InterceptionMouseStroke::y,
-            "information", &InterceptionMouseStroke::information
+        interception.new_usertype<Aula::Interception::MouseStroke>("MouseStroke",
+            sol::constructors<
+                Aula::Interception::MouseStroke(),
+                Aula::Interception::MouseStroke(u16, u16, i16, i32, i32, u32)
+            >(),
+            "state", &Aula::Interception::MouseStroke::state,
+            "flags", &Aula::Interception::MouseStroke::flags,
+            "rolling", &Aula::Interception::MouseStroke::rolling,
+            "x", &Aula::Interception::MouseStroke::x,
+            "y", &Aula::Interception::MouseStroke::y,
+            "information", &Aula::Interception::MouseStroke::information
         );
-        interception.new_usertype<InterceptionKeyStroke>("KeyStroke",
-            "code", &InterceptionKeyStroke::code,
-            "state", &InterceptionKeyStroke::state,
-            "information", &InterceptionKeyStroke::information
+        interception.new_usertype<Aula::Interception::KeyStroke>("KeyStroke",
+            sol::constructors<
+                Aula::Interception::KeyStroke(),
+                Aula::Interception::KeyStroke(u16, u16, u32)
+            >(),
+            "code", &Aula::Interception::KeyStroke::code,
+            "state", &Aula::Interception::KeyStroke::state,
+            "information", &Aula::Interception::KeyStroke::information
         );
 
         interception.new_usertype<Aula::Interception::Device>("Device",

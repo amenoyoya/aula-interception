@@ -1,9 +1,14 @@
 ﻿#include "../src/interception.hpp"
-#include <iostream>
+#include <deque>
 
 extern "C" {
     #include "../interception/library/interception.c"
 }
+
+enum KeyCode {
+    CTRL = 0x1D,
+    ALT = 0x38,
+};
 
 /*
     @MEMO Aula::Encoding::initialize() + Aula::IO::Stdout->write(...) は遅い
@@ -34,22 +39,45 @@ __main() {
     }
 
     /// 入力フィルタ設定
-    context.setKeyboardFilter(INTERCEPTION_FILTER_KEY_DOWN | INTERCEPTION_FILTER_KEY_UP | INTERCEPTION_KEY_E0 | INTERCEPTION_KEY_E1);
+    context.setKeyboardFilter(INTERCEPTION_FILTER_KEY_ALL);
     context.setMouseFilter(INTERCEPTION_FILTER_MOUSE_ALL - INTERCEPTION_FILTER_MOUSE_MOVE);
 
-    while (context.recieve()) {
-        InterceptionKeyStroke *keyStroke;
-        InterceptionMouseStroke *mouseStroke;
+    /// キー入力履歴（同時押し用）
+    std::deque<InterceptionKeyStroke> keyStrokes;
+    InterceptionKeyStroke lastKeyStroke{0, 0};
 
-        if (keyStroke = context.getCurrentKeyStroke()) {
-            Aula::IO::Stdout->write(
-                "Keyboard: " + context.getHardwareId() +
-                "\n\tcode: " + Aula::Encoding::toString(keyStroke->code) +
-                "\n\tstate: " + Aula::Encoding::toString(keyStroke->state) +
-                "\n\tinformation: " + Aula::Encoding::toString(keyStroke->information)
-            );
+    // 2つ同時押しに対応
+    for (int i = 0; i < 2; ++i) keyStrokes.push_back({0, 0});
+
+    while (context.recieve()) {
+        auto keyStroke = context.getCurrentKeyStroke();
+        auto mouseStroke = context.getCurrentMouseStroke();
+
+        if (keyStroke && (keyStroke->code != lastKeyStroke.code || keyStroke->state != lastKeyStroke.state)) {
+            keyStrokes.pop_front();
+            keyStrokes.push_back({ keyStroke->code, keyStroke->state });
+            for (auto it = keyStrokes.begin(); it != keyStrokes.end(); ++it) {
+                Aula::IO::Stdout->write(Aula::Encoding::toString(it->code) + "," + Aula::Encoding::toString(it->state) + " ", false);
+            }
+            Aula::IO::Stdout->write(""); // \n
+
+            lastKeyStroke.code = keyStroke->code;
+            lastKeyStroke.state = keyStroke->state;
+        }
+
+        if (keyStrokes[0].code == CTRL && keyStrokes[0].state == INTERCEPTION_KEY_DOWN && keyStrokes[1].code == ALT && keyStrokes[1].state == INTERCEPTION_KEY_DOWN) {
+            Aula::IO::Stdout->write("Ctrl + Alt pressed");
+        }
+
+        if (keyStroke) {
+            // Aula::IO::Stdout->write(
+            //     "Keyboard: " + context.getHardwareId() +
+            //     "\n\tcode: " + Aula::Encoding::toString(keyStroke->code) +
+            //     "\n\tstate: " + Aula::Encoding::toString(keyStroke->state) +
+            //     "\n\tinformation: " + Aula::Encoding::toString(keyStroke->information)
+            // );
             if (keyStroke->code == 1) break; // Escape で終了
-        } else if (mouseStroke = context.getCurrentMouseStroke()) {
+        } else if (mouseStroke) {
             Aula::IO::Stdout->write(
                 "Mouse: " + context.getHardwareId() +
                 "\n\tstate: " + Aula::Encoding::toString(mouseStroke->state) +

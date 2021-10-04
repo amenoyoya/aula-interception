@@ -31,6 +31,27 @@ namespace Aula {
             bool isKeyboard, isMouse;
         };
 
+        /// InterceptionMouseStroke
+        struct MouseStroke {
+            u16 state, flags;
+            i16 rolling;
+            i32 x, y;
+            u32 information;
+
+            MouseStroke(): state(0), flags(0), rolling(0), x(0), y(0), information(0) {}
+            explicit MouseStroke(u16 state, u16 flags, i16 rolling, i32 x, i32 y, u32 information):
+                state(state), flags(flags), rolling(rolling), x(x), y(y), information(information) {}
+        };
+
+        /// InterceptionKeyStroke
+        struct KeyStroke {
+            u16 code, state;
+            u32 information;
+
+            KeyStroke(): code(0), state(0), information(0) {}
+            explicit KeyStroke(u16 code, u16 state, u32 information): code(code), state(state), information(information) {}
+        };
+
         /// InterceptionContext wrapper class
         class Context: public Object {
         public:
@@ -115,16 +136,16 @@ namespace Aula {
 
             /// Get current input as key stroke
             // nullptr will be return if the current input is not a key input
-            InterceptionKeyStroke *getCurrentKeyStroke() const {
+            KeyStroke *getCurrentKeyStroke() const {
                 if (!device || !interception_is_keyboard(device)) return nullptr;
-                return (InterceptionKeyStroke *)&stroke;
+                return (KeyStroke *)&stroke;
             }
 
             /// Get current input as key stroke
             // nullptr will be return if the current input is not a key input
-            InterceptionMouseStroke *getCurrentMouseStroke() const {
+            MouseStroke *getCurrentMouseStroke() const {
                 if (!device || !interception_is_mouse(device)) return nullptr;
-                return (InterceptionMouseStroke *)&stroke;
+                return (MouseStroke *)&stroke;
             }
 
             /// Get current device index
