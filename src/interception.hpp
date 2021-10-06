@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <aula/core.hpp>
-#include <vector>
 #include <windows.h>
 
 #define INTERCEPTION_STATIC
@@ -125,13 +124,13 @@ namespace Aula {
             }
 
             /// Send input to keyboard device
-            bool sendKeyStroke(u32 deviceIndex, InterceptionKeyStroke *stroke) {
-                return context ? 0 < interception_send(context, deviceIndex, (InterceptionStroke *)stroke, sizeof(*stroke)) : false;
+            bool sendKeyStroke(u32 deviceIndex, KeyStroke *stroke) {
+                return context ? 0 < interception_send(context, deviceIndex, (InterceptionStroke *)stroke, 1) : false;
             }
 
             /// Send input to mouse device
-            bool sendMouseStroke(u32 deviceIndex, InterceptionMouseStroke *stroke) {
-                return context ? 0 < interception_send(context, deviceIndex, (InterceptionStroke *)stroke, sizeof(*stroke)) : false;
+            bool sendMouseStroke(u32 deviceIndex, MouseStroke *stroke) {
+                return context ? 0 < interception_send(context, deviceIndex, (InterceptionStroke *)stroke, 1) : false;
             }
 
             /// Get current input as key stroke

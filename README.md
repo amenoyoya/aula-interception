@@ -30,3 +30,14 @@
 ```powershell
 > aula.exe .\samples\interception.lua
 ```
+
+***
+
+## Tips
+
+### Aula.Interception.sendKeyAction について
+Rainbow Six Siege 等の FPS ゲームでは、チート対策のためか `Aula.Interception.sendKeyAction` (`Win32API.SendInput` のラッパー関数) のようなキー送信関数を使ってキーマッピングするとバグってしまう
+
+そのため、こういったゲームで独自のキーマッピングを行いたい場合は `Aula.Interception.Context:sendKeyStroke` (`interception_send` のラッパーメソッド) のような低レベル API を利用する必要がある
+
+- 参考: [samples/g600.lua](./samples/g600.lua)

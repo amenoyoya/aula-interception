@@ -10,7 +10,8 @@ extern "C" {
         auto aula = lua["Aula"].get_or_create<sol::table>();
         auto interception = aula["Interception"].get_or_create<sol::table>();
 
-        #include "interception_types.hpp"
+        #include "types_interception.hpp"
+        #include "types_winapi.hpp"
 
         interception.new_enum("ProcessPriority",
             "IDLE", Aula::Interception::ProcessPriority::IDLE,
@@ -98,6 +99,12 @@ extern "C" {
             "MIDDLEUP", Aula::Interception::MouseAction::MIDDLEUP,
             "XDOWN", Aula::Interception::MouseAction::XDOWN,
             "XUP", Aula::Interception::MouseAction::XUP
+        );
+
+        interception.new_enum("KeyAction",
+            "DOWN", Aula::Interception::KeyAction::DOWN,
+            "DOWNUP", Aula::Interception::KeyAction::DOWNUP,
+            "UP", Aula::Interception::KeyAction::UP
         );
 
         interception.set_function("sendMouseAction", Aula::Interception::sendMouseAction);
